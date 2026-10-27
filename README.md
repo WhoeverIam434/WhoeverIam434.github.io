@@ -113,3 +113,7 @@ npm run build
 - v2 按新架构重建：单页滚动、编辑式排版（去掉右侧信息卡）、新增 Focus 章节——
   滚动锁定 + 充能条放行，三张方向卡片可点击进入全屏小游戏（Control Systems 是倒立摆，
   另外两个暂为 TODO）。详见 `web/README.md`。
+- v3 增加博客：右侧横排导航 + 三个 Markdown 分区（Academic / Project / Personal Stuffs），
+  首页新增 Directory 区块。把 `.md` 丢进 `web/content/<分区>/` 并提交，
+  构建时自动生成列表与正文，日期默认取该文件的 git 提交日期。
+

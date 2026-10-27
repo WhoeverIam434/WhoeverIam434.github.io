@@ -1,41 +1,24 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { profile } from "@/data/profile";
 
 const links = [
-  { id: "focus", label: "Focus" },
-  { id: "experience", label: "Experience" },
-  { id: "projects", label: "Projects" },
-  { id: "skills", label: "Skills" },
-  { id: "education", label: "Education" },
-  { id: "contact", label: "Contact" },
+  { href: "/", label: "Index" },
+  { href: "/academic/", label: "Academic Stuffs" },
+  { href: "/project/", label: "Project Stuffs" },
+  { href: "/personal/", label: "Personal Stuffs" },
 ];
 
 export default function SiteNav() {
-  const [active, setActive] = useState<string>("");
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const sections = links
-      .map((link) => document.getElementById(link.id))
-      .filter((element): element is HTMLElement => element !== null);
-
-    if (sections.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        }
-      },
-      { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
+    setOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -51,6 +34,13 @@ export default function SiteNav() {
     };
   }, [open]);
 
+  const isActive = (href: string) => {
+    const target = href.replace(/\/+$/, "") || "/";
+    const current = pathname.replace(/\/+$/, "") || "/";
+    if (target === "/") return current === "/";
+    return current === target || current.startsWith(`${target}/`);
+  };
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-paper/85 backdrop-blur-md">
       <div
@@ -62,7 +52,7 @@ export default function SiteNav() {
         aria-label="Primary"
         className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between px-6 md:px-10"
       >
-        <a href="#top" className="flex items-baseline gap-2">
+        <a href="/" className="flex items-baseline gap-2">
           <span aria-hidden="true" className="font-mono text-sm text-accent">
             ///
           </span>
@@ -71,31 +61,31 @@ export default function SiteNav() {
           </span>
         </a>
 
-        <ul className="hidden items-center gap-7 md:flex">
-          {links.map((link) => (
-            <li key={link.id}>
-              <a
-                href={`#${link.id}`}
-                aria-current={active === link.id ? "true" : undefined}
-                className={`relative font-mono text-[10px] uppercase tracking-[0.18em] transition-colors ${
-                  active === link.id
-                    ? "text-accent"
-                    : "text-muted hover:text-ink"
-                }`}
-              >
-                {link.label}
-                {active === link.id ? (
-                  <span
-                    aria-hidden="true"
-                    className="absolute -bottom-1.5 left-0 h-px w-full bg-accent"
-                  />
-                ) : null}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <div className="ml-auto flex items-center gap-6">
+          <ul className="hidden items-center gap-6 md:flex">
+            {links.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  aria-current={isActive(link.href) ? "page" : undefined}
+                  className={`relative font-mono text-[10px] uppercase tracking-[0.18em] transition-colors ${
+                    isActive(link.href)
+                      ? "text-accent"
+                      : "text-muted hover:text-ink"
+                  }`}
+                >
+                  {link.label}
+                  {isActive(link.href) ? (
+                    <span
+                      aria-hidden="true"
+                      className="absolute -bottom-1.5 left-0 h-px w-full bg-accent"
+                    />
+                  ) : null}
+                </a>
+              </li>
+            ))}
+          </ul>
 
-        <div className="flex items-center gap-3">
           <a
             href={profile.cv}
             download
@@ -135,11 +125,13 @@ export default function SiteNav() {
           <div aria-hidden="true" className="hazard h-1 w-full opacity-60" />
           <ul className="mx-auto max-w-[1200px] px-6 py-4">
             {links.map((link) => (
-              <li key={link.id}>
+              <li key={link.href}>
                 <a
-                  href={`#${link.id}`}
+                  href={link.href}
                   onClick={() => setOpen(false)}
-                  className="flex items-baseline justify-between border-b border-line py-3 font-mono text-xs uppercase tracking-[0.16em] text-ink-soft transition-colors hover:text-accent"
+                  className={`flex items-baseline justify-between border-b border-line py-3 font-mono text-xs uppercase tracking-[0.16em] transition-colors hover:text-accent ${
+                    isActive(link.href) ? "text-accent" : "text-ink-soft"
+                  }`}
                 >
                   {link.label}
                   <span aria-hidden="true" className="text-muted">

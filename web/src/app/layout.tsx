@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 
+import Footer from "@/components/Footer";
+import SiteNav from "@/components/SiteNav";
+
 export const metadata: Metadata = {
   title: "Cheuk Hin Li — Robotics Engineer",
   description:
@@ -24,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-paper text-ink antialiased">
+        <SiteNav />
         {children}
+        <Footer />
         <div aria-hidden="true" className="page-fx" />
       </body>
     </html>

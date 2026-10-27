@@ -7,12 +7,15 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
-    "test": "node src/lib/pendulum.test.ts && node src/lib/focusCharge.test.ts"
+    "test": "node src/lib/pendulum.test.ts && node src/lib/focusCharge.test.ts && node src/lib/postFormat.test.ts"
   },
   "dependencies": {
+    "gray-matter": "^4.0.3",
     "next": "16.4.3",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",

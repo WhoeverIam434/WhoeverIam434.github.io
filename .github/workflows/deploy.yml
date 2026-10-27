@@ -1,4 +1,4 @@
-name: Deploy site to GitHub Pages
+﻿name: Deploy site to GitHub Pages
 
 on:
   push:
@@ -25,6 +25,8 @@ jobs:
         working-directory: web
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -54,7 +56,7 @@ jobs:
         run: npm run build
 
       # GitHub Pages runs Jekyll by default, which ignores folders starting
-      # with an underscore — that would drop the whole /_next asset tree.
+      # with an underscore 鈥?that would drop the whole /_next asset tree.
       - name: Disable Jekyll
         run: touch out/.nojekyll
 
@@ -73,3 +75,4 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+

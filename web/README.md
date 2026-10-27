@@ -31,27 +31,83 @@ v2 版站点：单页滚动、编辑式排版。第二个章节 **Focus** 会「
 ```
 web/
 ├─ src/app/
-│  ├─ layout.tsx          元数据、字体、根布局
-│  ├─ page.tsx            单页组装：Hero → Focus → Experience → Projects → Skills → Education → Contact
-│  └─ globals.css         Tailwind 引入 + 设计令牌 + 少量原语（矩阵括号、滑杆、网格纸）
+│  ├─ layout.tsx          元数据、根布局（含全局导航与页脚）
+│  ├─ page.tsx            首页：Hero → Focus → Experience → Projects → Skills → Education → Directory → Contact
+│  ├─ [section]/          博客列表页（academic / project / personal）
+│  ├─ [section]/[slug]/   博客正文页（Markdown 渲染）
+│  └─ globals.css         Tailwind 引入 + 设计令牌 + 原语（切角、HUD、条纹、正文样式）
 ├─ src/components/
-│  ├─ SiteNav.tsx         固定导航、滚动高亮、移动端全屏菜单
+│  ├─ SiteNav.tsx         固定导航（右侧横排）、移动端全屏菜单
 │  ├─ Hero.tsx            简介（无右侧卡片）
 │  ├─ Section.tsx         普通章节外壳（编号 + 标题 + 导语）
 │  ├─ FocusSection.tsx    Focus：粘性锁定、充能条、可点击卡片、小游戏挂载
+│  ├─ Directory.tsx       首页上的「目录」区块，链到三个博客分区
+│  ├─ MarkdownBody.tsx    客户端 Markdown 渲染（react-markdown + GFM）
 │  ├─ minigames/
-│  │  ├─ InvertedPendulum.tsx   Control Systems 小游戏：背景仿真 + 左侧增益 + 右上状态空间
+│  │  ├─ InvertedPendulum.tsx   Control Systems 小游戏
 │  │  └─ TodoMinigame.tsx       Robotics / Embedded 的占位小游戏
 │  ├─ Experience / Projects / Skills / Education / Contact / Footer / ButtonLink
 ├─ src/lib/
-│  ├─ pendulum.ts         倒立摆模型、控制器、线性化、稳定性判据（与 UI 解耦，可单测）
+│  ├─ pendulum.ts         倒立摆模型、控制器、线性化、稳定性判据（可单测）
 │  ├─ focusCharge.ts      滚动充能进度（纯函数）
+│  ├─ posts.ts            读取 content/*.md、解析 frontmatter、解析上传日期
+│  ├─ postFormat.ts       日期 / 标题格式化（纯函数，可单测）
 │  └─ *.test.ts
+├─ content/               博客源文件：academic/ · project/ · personal/
 ├─ src/data/profile.ts    所有文案与 CV 数据（改内容只需动这里）
 ├─ scripts/               Playwright 截图 / 交互验证脚本
 ├─ public/                简历 PDF、.nojekyll
 └─ shots/                 验证截图
 ```
+
+## 博客分区（Academic / Project / Personal Stuffs）
+
+导航栏横排在右侧，四个入口：`Index`、`Academic Stuffs`、`Project Stuffs`、`Personal Stuffs`。
+首页本身保留作品集内容，并新增一个 **Directory** 区块链到三个博客分区。
+
+### 怎么发一篇
+
+把 `.md` 文件丢进对应目录，提交并推送即可：
+
+```
+web/content/academic/*.md
+web/content/project/*.md
+web/content/personal/*.md
+```
+
+文件名就是 URL slug（`state-space-reading-notes.md` → `/academic/state-space-reading-notes`），
+标题、摘要、日期都可以通过 frontmatter 覆盖：
+
+```markdown
+---
+title: State Space Control — Reading Notes
+date: 2026-08-04
+summary: Notes from working through the course.
+---
+
+# 正文标题（没有 frontmatter 的 title 时用它）
+...
+```
+
+### 日期是怎么来的
+
+列表显示为 `Sep 2026 - Lorem Ipsum`，日期按以下顺序决定：
+
+1. frontmatter 里的 `date:`（想补写/倒填用这个）
+2. **该文件的 git commit 日期** —— 也就是你上传/提交它的时间
+3. 文件 mtime（本地还没提交时）
+
+> 为了让第 2 条在 CI 里也生效，`.github/workflows/deploy.yml` 的 checkout 步骤设置了
+> `fetch-depth: 0`（拉取完整历史）。否则浅克隆里只有最新一次提交，旧文件会退回 mtime。
+
+时间按 UTC 取月份，构建在任何时区都显示一致。
+
+### 列表与正文
+
+- 列表按日期倒序，每行 `Sep 2026 - Title`，整行可点；
+- 正文页支持 GitHub Flavored Markdown（表格、任务列表、围栏代码等），样式在
+  `globals.css` 的 `.post-body`；
+- Markdown 中的原始 HTML 不会被渲染（react-markdown 默认忽略），避免注入。
 
 ## Focus 章节：锁定与充能
 
@@ -158,7 +214,7 @@ B = [0, 1, 0, −2]ᵀ
 ```bash
 cd web
 npm run typecheck     # tsc --noEmit，严格模式无错误
-npm test              # 16 条：物理 10 条 + Focus 充能 6 条
+npm test              # 20 条：物理 10 条 + Focus 充能 6 条 + 博客格式化 4 条
 npm run build         # 静态导出到 out/
 ```
 
@@ -168,9 +224,12 @@ npm run build         # 静态导出到 out/
 - 点击 Control Systems 打开全屏小游戏，无 console / page error；
 - 增益输入 `9999` → 立即变 `120`（范围夹取）；
 - `Esc` 关闭小游戏后回到锁定中的 Focus；
-- 移动端 390px：卡片、充能条、小游戏布局正常（背景摆以 40% 透明度避免文字干扰）。
+- 博客路由：首页 → 列表 → 正文全链路可点，请求无 404；列表日期与标题按预期显示；
+  正文的代码块 / 表格 / 引用 / 列表样式正常；
+- 移动端 390px：卡片、充能条、小游戏、博客列表均正常。
 
-截图见 `shots/`（整页与各章节）和 `shots/focus/`（锁定、充能、悬停、小游戏、移动端）。
+截图见 `shots/`（整页与各章节）、`shots/focus/`（锁定、充能、悬停、小游戏）
+和 `shots/blog/`（列表、正文、移动端）。
 
 ## 部署
 

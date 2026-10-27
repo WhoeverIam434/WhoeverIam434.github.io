@@ -1,4 +1,4 @@
-import ButtonLink from "@/components/ButtonLink";
+﻿import ButtonLink from "@/components/ButtonLink";
 import Section from "@/components/Section";
 import { profile } from "@/data/profile";
 
@@ -6,7 +6,7 @@ export default function Contact() {
   return (
     <Section
       id="contact"
-      index="06"
+      index="07"
       title="Contact"
       intro="If it moves, senses, or needs a control loop, I would like to hear about it."
     >
@@ -54,7 +54,7 @@ export default function Contact() {
           <div>
             <dt className="mono-label">Based in</dt>
             <dd className="mt-2 font-mono text-sm">
-              {profile.location} · {profile.timezone}
+              {profile.location} 路 {profile.timezone}
             </dd>
           </div>
         </dl>
@@ -62,3 +62,4 @@ export default function Contact() {
     </Section>
   );
 }
+
