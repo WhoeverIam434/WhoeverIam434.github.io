@@ -54,7 +54,7 @@ export default function Contact() {
           <div>
             <dt className="mono-label">Based in</dt>
             <dd className="mt-2 font-mono text-sm">
-              {profile.location} 路 {profile.timezone}
+              {profile.location} 
             </dd>
           </div>
         </dl>
