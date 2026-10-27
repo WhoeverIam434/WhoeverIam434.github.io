@@ -16,13 +16,14 @@ import {
 } from "@/lib/pendulum";
 
 const COLORS = {
-  ink: "#14130f",
-  muted: "#6e695c",
-  line: "#d8d2c2",
-  lineStrong: "#b6ae99",
-  accent: "#b03d0e",
-  paper: "#f4f2ec",
-  card: "#fbfaf6",
+  ink: "#e9eef0",
+  muted: "#7d8a8d",
+  line: "#232a2d",
+  lineStrong: "#3b464b",
+  accent: "#c9ff3f",
+  paper: "#0a0c0d",
+  card: "#121719",
+  danger: "#ff5a3c",
 } as const;
 
 const MONO =
@@ -84,11 +85,11 @@ function drawScene(
 
   ctx.fillStyle = COLORS.card;
   ctx.fillRect(cartX - cartWidth / 2, cartTop, cartWidth, cartHeight);
-  ctx.strokeStyle = fallen ? COLORS.accent : COLORS.ink;
+  ctx.strokeStyle = fallen ? COLORS.danger : COLORS.ink;
   ctx.lineWidth = 1.5;
   ctx.strokeRect(cartX - cartWidth / 2, cartTop, cartWidth, cartHeight);
 
-  ctx.fillStyle = fallen ? COLORS.accent : COLORS.ink;
+  ctx.fillStyle = fallen ? COLORS.danger : COLORS.ink;
   for (const offset of [-0.28, 0.28]) {
     ctx.beginPath();
     ctx.arc(cartX + cartWidth * offset, groundY - 3, 5, 0, Math.PI * 2);
@@ -102,8 +103,8 @@ function drawScene(
   const rodLength = PLANT.length * pxPerMeter;
   ctx.save();
   ctx.setLineDash([3, 5]);
-  ctx.strokeStyle = COLORS.line;
   for (const angle of [0, 0.2, -0.2]) {
+    ctx.strokeStyle = angle === 0 ? COLORS.lineStrong : COLORS.line;
     ctx.beginPath();
     ctx.moveTo(pivotX, pivotY);
     ctx.lineTo(
@@ -118,7 +119,7 @@ function drawScene(
   const tipX = pivotX + Math.sin(state.theta) * rodLength;
   const tipY = pivotY - Math.cos(state.theta) * rodLength;
 
-  ctx.strokeStyle = fallen ? COLORS.accent : COLORS.ink;
+  ctx.strokeStyle = fallen ? COLORS.danger : COLORS.ink;
   ctx.lineWidth = 4;
   ctx.lineCap = "round";
   ctx.beginPath();
@@ -126,7 +127,7 @@ function drawScene(
   ctx.lineTo(tipX, tipY);
   ctx.stroke();
 
-  ctx.fillStyle = COLORS.accent;
+  ctx.fillStyle = fallen ? COLORS.danger : COLORS.accent;
   ctx.beginPath();
   ctx.arc(tipX, tipY, Math.max(9, 0.055 * pxPerMeter), 0, Math.PI * 2);
   ctx.fill();
@@ -374,8 +375,11 @@ export default function InvertedPendulum({ onClose }: { onClose: () => void }) {
       />
 
       <div className="pointer-events-none absolute inset-0 p-6 md:p-12">
-        <div className="pointer-events-auto relative mx-auto flex min-h-full w-full max-w-[1280px] flex-col">
-          <p className="mono-label">Focus — Control Systems</p>
+        <div className="hud pointer-events-auto relative mx-auto flex min-h-full w-full max-w-[1280px] flex-col">
+          <p className="mono-label flex items-center gap-2 text-accent">
+            <span aria-hidden="true" className="hazard h-1 w-8" />
+            Focus — Control Systems
+          </p>
 
           <h2 className="mt-4 max-w-[9ch] text-[clamp(2.4rem,6vw,4.25rem)] leading-[0.94]">
             Inverted Pendulum
@@ -417,8 +421,8 @@ export default function InvertedPendulum({ onClose }: { onClose: () => void }) {
             onClick={reset}
             className={`mt-7 inline-flex w-fit items-center gap-2 border px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.16em] transition-colors ${
               fallen
-                ? "border-accent text-accent hover:bg-accent hover:text-paper"
-                : "border-line-strong text-ink-soft hover:border-ink hover:text-ink"
+                ? "border-danger text-danger hover:bg-danger hover:text-paper"
+                : "border-line-strong text-ink-soft hover:border-accent hover:text-accent"
             }`}
           >
             <svg
@@ -451,7 +455,7 @@ export default function InvertedPendulum({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={onClose}
-            className="mt-auto ml-auto inline-flex items-center gap-2 pt-8 font-mono text-[11px] uppercase tracking-[0.16em] text-muted transition-colors hover:text-ink"
+            className="mt-auto ml-auto inline-flex items-center gap-2 pt-8 font-mono text-[11px] uppercase tracking-[0.16em] text-muted transition-colors hover:text-accent"
           >
             Close
             <span aria-hidden="true" className="text-sm leading-none">

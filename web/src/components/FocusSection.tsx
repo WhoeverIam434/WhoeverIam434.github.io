@@ -38,9 +38,7 @@ export default function FocusSection() {
       const section = sectionRef.current;
       if (!section) return;
       const rect = section.getBoundingClientRect();
-      setCharge(
-        computeCharge(rect.top, rect.height, window.innerHeight),
-      );
+      setCharge(computeCharge(rect.top, rect.height, window.innerHeight));
     };
 
     const request = () => {
@@ -90,51 +88,82 @@ export default function FocusSection() {
       style={{ height: "calc(100svh + 70vh)" }}
     >
       <div className="sticky top-0 h-[100svh] overflow-hidden">
-        <div className="mx-auto flex h-full w-full max-w-[1120px] flex-col px-6 pb-8 pt-24 md:px-10 md:pt-28">
-          <header className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-            <div className="flex items-baseline gap-4">
-              <span className="mono-label text-accent">01</span>
-              <h2 id="focus-title" className="text-3xl md:text-4xl">
+        <div className="mx-auto flex h-full w-full max-w-[1200px] flex-col px-6 pb-8 pt-24 md:px-10 md:pt-28">
+          <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+            <div className="flex items-center gap-4">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-accent font-mono text-[10px] text-accent">
+                01
+              </span>
+              <h2 id="focus-title" className="text-3xl leading-none md:text-4xl">
                 Focus
               </h2>
+              <span aria-hidden="true" className="hidden h-px w-16 bg-line sm:block" />
             </div>
             <p className="mono-label hidden md:block">
-              Click a track to open its minigame
+              // Select a track to open its minigame
             </p>
           </header>
 
-          <div className="mt-6 flex min-h-0 flex-1 md:mt-0 md:items-center">
-            <ul className="grid w-full grid-rows-3 gap-px bg-line md:h-[400px] md:grid-cols-3 md:grid-rows-1">
+          <div className="mt-6 flex min-h-0 flex-1 md:mt-8 md:items-center">
+            <ul className="grid w-full grid-rows-3 gap-px bg-line md:h-[420px] md:grid-cols-3 md:grid-rows-1">
               {focusAreas.map((area) => {
                 const gameId = GAME_BY_INDEX[area.index] ?? "robotics";
                 const available = gameId === "control";
                 return (
-                  <li key={area.title} className="min-h-0 bg-paper">
+                  <li key={area.title} className="group relative min-h-0 bg-paper">
                     <button
                       type="button"
                       onClick={() => setGame(gameId)}
-                      className="group flex h-full w-full flex-col px-5 py-4 text-left transition-[transform,background-color] duration-300 ease-out hover:z-10 hover:scale-[1.035] hover:bg-card focus-visible:scale-[1.035] focus-visible:bg-card md:px-7 md:py-8"
+                      className="relative flex h-full w-full flex-col overflow-hidden px-5 py-5 text-left transition-[background-color,transform] duration-300 ease-out hover:z-10 hover:scale-[1.015] hover:bg-card focus-visible:bg-card md:px-7 md:py-8"
                     >
-                      <div className="flex items-baseline justify-between gap-3">
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-x-0 top-0 h-px bg-line-strong transition-colors duration-300 group-hover:bg-accent"
+                      />
+
+                      <span
+                        aria-hidden="true"
+                        className="stroke-text pointer-events-none absolute -right-3 -top-8 font-display text-[7rem] leading-none tracking-tighter transition-colors duration-300 group-hover:[-webkit-text-stroke:1px_var(--color-accent)] md:text-[9rem]"
+                      >
+                        {area.index}
+                      </span>
+
+                      <div className="relative flex items-baseline justify-between gap-3">
                         <span className="mono-label text-accent">
-                          {area.index}
+                          / {area.index}
                         </span>
                         <span className="mono-label opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                           {available ? "Open" : "TODO"}
                         </span>
                       </div>
 
-                      <h3 className="mt-2 text-xl md:mt-6 md:text-3xl">
+                      <h3 className="relative mt-3 text-2xl md:mt-6 md:text-4xl">
                         {area.title}
                       </h3>
-                      <p className="mt-2 line-clamp-2 text-[13px] leading-snug text-ink-soft md:mt-3 md:line-clamp-none md:text-sm md:leading-relaxed">
+                      <p className="relative mt-2 line-clamp-2 max-w-[26ch] text-[13px] leading-snug text-ink-soft md:mt-3 md:max-w-none md:line-clamp-none md:text-sm md:leading-relaxed">
                         {area.description}
                       </p>
 
-                      <span className="mt-auto inline-flex items-center gap-2 pt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-muted transition-colors group-hover:text-ink md:pt-5">
+                      <ul className="relative mt-4 hidden flex-wrap gap-1.5 md:flex">
+                        {area.tags.map((tag) => (
+                          <li
+                            key={tag}
+                            className="border border-line px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-muted transition-colors group-hover:border-line-strong group-hover:text-ink-soft"
+                          >
+                            {tag}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <span className="relative mt-auto inline-flex items-center gap-2 pt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted transition-colors group-hover:text-accent">
                         {available ? "Play the pendulum" : "Minigame — TODO"}
-                        <span aria-hidden="true">→</span>
+                        <span aria-hidden="true">↗</span>
                       </span>
+
+                      <span
+                        aria-hidden="true"
+                        className="absolute bottom-0 left-0 h-0.5 w-0 bg-accent transition-all duration-300 group-hover:w-full"
+                      />
                     </button>
                   </li>
                 );
@@ -150,19 +179,17 @@ export default function FocusSection() {
             aria-valuenow={percent}
             className="mt-6 shrink-0 md:mt-8"
           >
-            <div className="flex items-baseline justify-between font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
-              <span>
+            <div className="flex items-baseline justify-between font-mono text-[10px] uppercase tracking-[0.2em]">
+              <span className={charge.complete ? "text-accent" : "text-muted"}>
                 {charge.complete
                   ? "Unlocked — keep scrolling"
-                  : "Locked — keep scrolling to continue"}
+                  : "Locked — charge to continue"}
               </span>
               <span className="tabular-nums text-ink-soft">{percent}%</span>
             </div>
-            <div className="mt-2 h-[2px] w-full overflow-hidden bg-line">
+            <div className="mt-2 h-1 w-full bg-line">
               <div
-                className={`h-full transition-[width] duration-150 ease-out ${
-                  charge.complete ? "bg-accent" : "bg-ink"
-                }`}
+                className="h-1 bg-accent transition-[width] duration-150 ease-out"
                 style={{ width: `${percent}%` }}
               />
             </div>

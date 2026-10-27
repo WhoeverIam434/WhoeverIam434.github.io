@@ -10,8 +10,8 @@ type SectionProps = {
 };
 
 /**
- * Editorial section shell: a hairline top rule, an index + title on the left
- * and an optional lead paragraph on the right.
+ * Editorial section shell with a technical header: index chip, condensed
+ * title, accent rule and an optional lead paragraph.
  */
 export default function Section({
   id,
@@ -23,14 +23,25 @@ export default function Section({
 }: SectionProps) {
   return (
     <section id={id} className={`border-t border-line ${className}`}>
-      <div className="mx-auto w-full max-w-[1120px] px-6 py-20 md:px-10 md:py-28">
-        <header className="mb-12 grid gap-6 md:mb-16 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-end md:gap-16">
-          <div className="flex items-baseline gap-4">
-            <span className="mono-label shrink-0 text-accent">{index}</span>
-            <h2 className="text-3xl leading-[1.05] md:text-[2.75rem]">{title}</h2>
+      <div className="mx-auto w-full max-w-[1200px] px-6 py-20 md:px-10 md:py-28">
+        <header className="mb-12 md:mb-16">
+          <div className="flex items-center gap-4">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-accent font-mono text-[10px] text-accent">
+              {index}
+            </span>
+            <h2 className="text-3xl leading-none md:text-[2.75rem]">{title}</h2>
+            <span className="ml-auto hidden font-mono text-[10px] uppercase tracking-[0.22em] text-muted md:block">
+              // Section {index}
+            </span>
           </div>
+
+          <div className="mt-5 flex items-center gap-3">
+            <span className="h-px w-16 bg-accent" />
+            <span className="h-px flex-1 bg-line" />
+          </div>
+
           {intro ? (
-            <p className="max-w-xl text-base leading-relaxed text-ink-soft md:text-[1.0625rem]">
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
               {intro}
             </p>
           ) : null}
