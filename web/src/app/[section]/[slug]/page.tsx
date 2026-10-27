@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import MarkdownBody from "@/components/MarkdownBody";
+import ReadingProgress from "@/components/ReadingProgress";
 import {
   SECTIONS,
   getPost,
@@ -48,6 +49,7 @@ export default async function PostPage({
 
   return (
     <main className="border-t border-line">
+      <ReadingProgress />
       <article className="mx-auto w-full max-w-[860px] px-6 py-20 md:px-10 md:py-28">
         <a
           href={`/${rawSection}/`}
