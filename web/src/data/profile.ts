@@ -9,7 +9,9 @@ export const profile = {
   availability: "Open to 2026 winter internships — embedded & robotics software",
   github: "", // add a URL to render the link
   linkedin: "", // add a URL to render the link
-  cv: "/Cheuk_Hin_Li_-_Robotics_Engineer.pdf",
+  // Relative on purpose: it keeps working when the site is served from a
+  // sub-path such as https://name.github.io/<repo>/ .
+  cv: "Cheuk_Hin_Li_-_Robotics_Engineer.pdf",
   summary:
     "I write firmware that makes machines move, and control loops that make them move well. At HKUST's Robotics Team I develop C firmware for STM32F407 microcontrollers — sensor interfaces, motor control and the integration work between subteams — and I built the climbing mechanism and localisation stack for the War Dragon robot at ABU Robocon 2026. I'm currently researching magnetic tactile sensors at Mevita Robotics Lab.",
 } as const;

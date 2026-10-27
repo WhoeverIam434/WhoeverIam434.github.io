@@ -120,5 +120,36 @@ npm run build         # 静态导出到 out/
 
 ## 部署
 
-`npm run build` 后把 `out/` 整个目录上传即可（GitHub Pages / Netlify / Vercel /
-任意静态服务器）。因为是纯静态导出，不需要 Node 运行时。
+纯静态导出，`npm run build` 产出 `out/`，放到任意静态服务器即可。
+
+### GitHub Pages（Actions，推荐）
+
+仓库根目录的 `.github/workflows/deploy.yml` 已配置好，流程见根目录 README。
+要点：
+
+- Pages 的 Source 选 **GitHub Actions**；
+- 工作流按仓库名自动设置 `NEXT_PUBLIC_BASE_PATH`：
+  - `name.github.io` → 空（站点在域名根）
+  - 其他仓库 → `/<repo>`（站点在 `https://name.github.io/<repo>/`）
+- 构建后补 `.nojekyll`，避免 Jekyll 吞掉 `_next/` 目录；
+- 若使用自定义域名，把工作流里的 `NEXT_PUBLIC_BASE_PATH` 改为空字符串。
+
+### 手动构建并上传
+
+```powershell
+cd web
+npm ci
+$env:NEXT_PUBLIC_BASE_PATH="/你的仓库名"   # 用户页 name.github.io 留空
+npm run build
+```
+
+把 `out/` 内容上传到仓库根，并添加空文件 `.nojekyll`；
+Pages → Source → Deploy from a branch → `main` / `(root)`。
+或者用 `npx gh-pages -d out --dotfiles` 发布到 `gh-pages` 分支。
+
+> 本地开发不需要设置 `NEXT_PUBLIC_BASE_PATH`，`npm run dev` 仍然在 `/` 下。
+
+### 其他平台
+
+Netlify / Vercel / Cloudflare Pages：Build command `npm run build`，输出目录 `out`，
+根目录设为 `web`。因为 `output: "export"`，部署后不需要 Node 运行时。
