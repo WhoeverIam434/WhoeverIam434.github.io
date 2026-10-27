@@ -1,6 +1,7 @@
 # web — Next.js 版个人网站
 
-v2 版站点：单页滚动，编辑式排版，新增 **Focus** 章节与可交互的 **倒立摆模拟器**。
+v2 版站点：单页滚动、编辑式排版。第二个章节 **Focus** 会「锁住」滚动（充能条满才放行），
+三张关注方向卡片可点击进入各自的全屏小游戏；Control Systems 的小游戏是倒立摆。
 
 ## 技术栈
 
@@ -19,19 +20,67 @@ web/
 ├─ src/components/
 │  ├─ SiteNav.tsx         固定导航、滚动高亮、移动端全屏菜单
 │  ├─ Hero.tsx            简介（无右侧卡片）
-│  ├─ Section.tsx         章节外壳（编号 + 标题 + 导语）
-│  ├─ Focus.tsx           三块 Focus 区块 + 模拟器
-│  ├─ PendulumSimulator.tsx  客户端组件：画布、PID 增益、状态空间、Routh–Hurwitz
+│  ├─ Section.tsx         普通章节外壳（编号 + 标题 + 导语）
+│  ├─ FocusSection.tsx    Focus：粘性锁定、充能条、可点击卡片、小游戏挂载
+│  ├─ minigames/
+│  │  ├─ InvertedPendulum.tsx   Control Systems 小游戏：背景仿真 + 左侧增益 + 右上状态空间
+│  │  └─ TodoMinigame.tsx       Robotics / Embedded 的占位小游戏
 │  ├─ Experience / Projects / Skills / Education / Contact / Footer / ButtonLink
-├─ src/lib/pendulum.ts    倒立摆模型、控制器、线性化、稳定性判据（与 UI 解耦，可单测）
-├─ src/lib/pendulum.test.ts
+├─ src/lib/
+│  ├─ pendulum.ts         倒立摆模型、控制器、线性化、稳定性判据（与 UI 解耦，可单测）
+│  ├─ focusCharge.ts      滚动充能进度（纯函数）
+│  └─ *.test.ts
 ├─ src/data/profile.ts    所有文案与 CV 数据（改内容只需动这里）
-├─ scripts/capture.mjs    Playwright 截图 / 交互验证脚本
-├─ public/                简历 PDF
+├─ scripts/               Playwright 截图 / 交互验证脚本
+├─ public/                简历 PDF、.nojekyll
 └─ shots/                 验证截图
 ```
 
-## 倒立摆模拟器
+## Focus 章节：锁定与充能
+
+- 章节高度 = `100svh + 70vh`，内部面板 `sticky top-0 h-[100svh]`，所以进入后画面**钉住不动**；
+- 多出来的 70vh 就是「充能距离」：滚动把它走完，底部进度条从 0% 走到 100%；
+- 进度条满之前标签显示 `Locked — keep scrolling to continue`，满 100% 变成
+  `Unlocked — keep scrolling` 并转为强调色，页面随后放行进入 Experience；
+- 进度由 `computeCharge()` 纯函数根据 `getBoundingClientRect()` 计算，`scroll` 事件用
+  `requestAnimationFrame` 节流；
+- 实现上没有 `preventDefault` 拦截滚轮，因此触控板、键盘、移动端惯性滚动都不会失效，
+  但视觉上确实是被「锁」在本章节（这也是为了不破坏可访问性做的取舍）。
+
+三张卡片（Robotics / Embedded / Control Systems）：
+
+- 悬停时放大到 `scale(1.035)` 并浮到相邻卡片之上，右上角出现 `OPEN` / `TODO`；
+- 点击打开全屏小游戏；小游戏打开时锁 `body` 滚动，`Esc` 或 **Close** 退出。
+
+| 卡片 | 小游戏 |
+| --- | --- |
+| Robotics | 占位页（`TODO`） |
+| Embedded | 占位页（`TODO`） |
+| Control Systems | 倒立摆（背景仿真 + 增益调节） |
+
+## 倒立摆小游戏
+
+按需求做了简化，屏幕只有三块内容：
+
+```
+┌──────────────────────────────────────────────┐
+│ Focus — Control Systems            Linearized state space model
+│ Inverted Pendulum                  ẋ = A x + B u
+│                                    A = [ … ]   B = [ … ]
+│ Kp ────────●────────
+│ Ki ─●───────────────
+│ Kd ────●────────────
+│ [ Reset ]                              Close ×
+│                                  （摆就在背景里）
+└──────────────────────────────────────────────┘
+```
+
+- **背景**：全屏 canvas 画小车–摆（含直立参考线与 ±11° 线性化窗口虚线），摄像机跟随小车；
+- **左侧**：`Focus — Control Systems`、标题、Kp / Ki / Kd 三根滑杆（无边框、无卡片，直接压在背景上，
+  数值可直接键入，超出范围立即夹到允许区间）、Reset；
+- **右上**：`Linearized state space model` + A、B 矩阵；
+- 仅此而已：不再显示遥测、Routh–Hurwitz 判定、说明卡片。
+- 摆失稳倒下时杆与小车变为强调色，Reset 按钮同步高亮；点 Reset 回到初始角。
 
 ### 被控对象
 
@@ -43,22 +92,21 @@ l θ̈ = g sinθ − ẍ cosθ
 ```
 
 参数：`M = 1.0 kg`、`m = 0.20 kg`、`l = 0.50 m`、`g = 9.81 m/s²`，执行器饱和 ±120 N。
-用 **RK4** 以 1/240 s 固定步长积分，画面按 60 fps 渲染，摄像机跟随小车。
+用 **RK4** 以 1/240 s 固定步长积分，画面按 60 fps 渲染。
 
 ### 控制器
 
 `u = Kp·θ + Kd·θ̇ + Ki·∫θ`（对角度误差的 PID，积分项带 ±3 限幅）。
 
-三个增益都可以拖动滑杆或用键盘输入：
-- 输入框实时校验，超出范围立即被夹到 `Kp ∈ [0,120]`、`Ki ∈ [0,40]`、`Kd ∈ [0,30]`；
-- 失去焦点 / 回车时再按步长取整一次，因此不合理数值不会进入控制器；
-- **Reset system** 把状态回到初始角 `θ₀ = 0.15 rad`（8.6°）、速度与积分清零。
+- 范围：`Kp ∈ [0,120]`、`Ki ∈ [0,40]`、`Kd ∈ [0,30]`；
+- 输入框实时夹取，失焦 / 回车时按步长取整，不合理数值不会进入控制器；
+- **Reset** 把状态回到初始角 `θ₀ = 0.15 rad`（8.6°）、速度与积分清零。
 
 ### 工作点与线性化
 
 - 工作点：`θ = 0, θ̇ = 0, ẋ = 0`，小车位置 `x` 自由（平衡是一个流形）。
 - 达到工作点的方式：**初始就放在窗口内**（8.6°），不做摆起；控制器负责把角度收敛到 0。
-  这样线性模型从第一步起就是成立的，同时仿真本身跑的仍是非线性对象。
+  线性模型从第一步起成立，而仿真本身跑的仍是非线性对象。
 - 线性化（`sinθ ≈ θ`、`cosθ ≈ 1`、`θ̇² ≈ 0`）得到状态空间模型：
 
 ```
@@ -72,21 +120,8 @@ A = [[0, 1, 0, 0], [0, 0, −1.962, 0], [0, 0, 0, 1], [0, 0, 23.544, 0]]
 B = [0, 1, 0, −2]ᵀ
 ```
 
-页面实时展示 A、B、开环极点 `0, 0, ±4.85 s⁻¹`，以及线性化有效域（|θ| ≲ 0.2 rad ≈ 11°）。
-
-### 稳定性判据
-
-把 PID 代回线性模型并对 ∫θ 求导，得到三阶闭环特征方程：
-
-```
-s³ + 2Kd s² + (2Kp − a) s + 2Ki = 0,    a = g(M+m)/(Ml) = 23.544
-```
-
-页面按 Routh–Hurwitz 四条条件逐条判定（`2Kd > 0`、`2Kp − a > 0`、`2Ki > 0`、
-`(2Kd)(2Kp − a) > 2Ki`），并结合运行状态显示 `STABILISING / UNSTABLE GAINS / LOST BALANCE`。
-
-> 默认 `Kp=40, Ki=2, Kd=6` → `s³ + 12s² + 56.456s + 4`，稳定；
-> `Kp=2` 时 `2Kp − a < 0`，不满足条件，摆会发散直到 69° 
+`src/lib/pendulum.ts` 里保留了 Routh–Hurwitz 判据与开环极点计算（有单测覆盖），
+只是新的小游戏界面不再展示它们，后续要加回来可以直接复用。
 
 ## 维护
 
@@ -95,6 +130,8 @@ s³ + 2Kd s² + (2Kp − a) s + 2Ki = 0,    a = g(M+m)/(Ml) = 23.544
 | 文案、经历、项目、技能、教育 | `src/data/profile.ts` |
 | 个人链接（GitHub / LinkedIn，当前留空不渲染） | `src/data/profile.ts` 的 `github` / `linkedin` |
 | 简历 PDF | 替换 `public/Cheuk_Hin_Li_-_Robotics_Engineer.pdf` |
+| Focus 的充能距离（现在 70vh） | `FocusSection.tsx` 里的 `height: "calc(100svh + 70vh)"` |
+| 小游戏布局 / 文案 | `src/components/minigames/*` |
 | 物理参数、初始角、失效角 | `src/lib/pendulum.ts` 的 `PLANT` |
 | 增益范围与默认值 | `src/lib/pendulum.ts` 的 `GAIN_LIMITS` |
 | 配色 / 字体 / 尺寸 | `src/app/globals.css` 的 `@theme` |
@@ -104,19 +141,19 @@ s³ + 2Kd s² + (2Kp − a) s + 2Ki = 0,    a = g(M+m)/(Ml) = 23.544
 ```bash
 cd web
 npm run typecheck     # tsc --noEmit，严格模式无错误
-npm test              # 10 条：线性化矩阵、极点、特征多项式、Routh 判据、饱和、收敛、失稳、冻结、范围夹取、数字格式
+npm test              # 16 条：物理 10 条 + Focus 充能 6 条
 npm run build         # 静态导出到 out/
 ```
 
-在浏览器里做的交互验证（`scripts/capture.mjs`，Playwright + 系统 Chrome）：
+浏览器里的交互验证（Playwright 驱动系统 Chrome）：
 
-- 无 console / page error；
-- 数值框输入 `9999` → 立即变 `120`（范围被夹住）；
-- `Kp=2` → 状态显示 `Unstable gains`，稳定性条件两条 `fail`，角度开始发散；
-- `Reset system` → 角度回到 0.4° 左右并重新收敛；
-- 移动端 390 px 下布局与菜单正常。
+- `#focus` 钉住期间 sticky 面板 `top` 始终为 `0`，进度条 18% → 75% → 100%；
+- 点击 Control Systems 打开全屏小游戏，无 console / page error；
+- 增益输入 `9999` → 立即变 `120`（范围夹取）；
+- `Esc` 关闭小游戏后回到锁定中的 Focus；
+- 移动端 390px：卡片、充能条、小游戏布局正常（背景摆以 40% 透明度避免文字干扰）。
 
-截图产物在 `shots/`。
+截图见 `shots/`（整页与各章节）和 `shots/focus/`（锁定、充能、悬停、小游戏、移动端）。
 
 ## 部署
 

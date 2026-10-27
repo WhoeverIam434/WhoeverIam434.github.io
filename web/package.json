@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
-    "test": "node src/lib/pendulum.test.ts"
+    "test": "node src/lib/pendulum.test.ts && node src/lib/focusCharge.test.ts"
   },
   "dependencies": {
     "next": "16.4.3",
