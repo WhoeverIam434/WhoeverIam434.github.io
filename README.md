@@ -89,8 +89,9 @@ $env:NEXT_PUBLIC_BASE_PATH="/你的仓库名"   # 用户页 <name>.github.io 请
 npm run build
 ```
 
-把 `web/out/` 里的**全部内容**（含 `_next/` 目录）上传到站点仓库根目录，
-并新建一个空的 `.nojekyll` 文件；然后 Settings → Pages → Source 选
+把 `web/out/` 里的**全部内容**（含 `_next/` 目录）上传到站点仓库根目录。
+`.nojekyll` 已经包含在构建产物里（`web/public/.nojekyll` → `out/.nojekyll`），
+不需要手动创建；然后 Settings → Pages → Source 选
 **Deploy from a branch** → `main` / `(root)`。
 也可以 `npx gh-pages -d out --dotfiles` 推到 `gh-pages` 分支再选该分支。
 

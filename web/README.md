@@ -86,7 +86,7 @@ s³ + 2Kd s² + (2Kp − a) s + 2Ki = 0,    a = g(M+m)/(Ml) = 23.544
 `(2Kd)(2Kp − a) > 2Ki`），并结合运行状态显示 `STABILISING / UNSTABLE GAINS / LOST BALANCE`。
 
 > 默认 `Kp=40, Ki=2, Kd=6` → `s³ + 12s² + 56.456s + 4`，稳定；
-> `Kp=2` 时 `2Kp − a < 0`，不满足条件，摆会发散直到 69° 触发失稳停止。
+> `Kp=2` 时 `2Kp − a < 0`，不满足条件，摆会发散直到 69° 
 
 ## 维护
 
@@ -143,7 +143,7 @@ $env:NEXT_PUBLIC_BASE_PATH="/你的仓库名"   # 用户页 name.github.io 留�
 npm run build
 ```
 
-把 `out/` 内容上传到仓库根，并添加空文件 `.nojekyll`；
+把 `out/` 内容上传到仓库根（`.nojekyll` 已随产物生成，无需手动添加）；
 Pages → Source → Deploy from a branch → `main` / `(root)`。
 或者用 `npx gh-pages -d out --dotfiles` 发布到 `gh-pages` 分支。
 
