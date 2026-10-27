@@ -1,5 +1,5 @@
 export const profile = {
-  name: "Cheuk Hin Li",
+  name: "Li Cheuk Hin",
   role: "Robotics engineer — embedded firmware · motion control · localisation",
   location: "Hong Kong",
   timezone: "UTC+8",
@@ -7,8 +7,8 @@ export const profile = {
   phone: "+852 6506 3916",
   phoneHref: "+85265063916",
   availability: "Open to 2026 winter internships — embedded & robotics software",
-  github: "", // add a URL to render the link
-  linkedin: "", // add a URL to render the link
+  github: "https://github.com/WhoeverIam434", // add a URL to render the link
+  linkedin: "https://www.linkedin.com/in/cheuk-hin-li-a34b4b386/", // add a URL to render the link
   // Relative on purpose: it keeps working when the site is served from a
   // sub-path such as https://name.github.io/<repo>/ .
   cv: "Cheuk_Hin_Li_-_Robotics_Engineer.pdf",
@@ -22,10 +22,10 @@ export type Stat = {
 };
 
 export const stats: Stat[] = [
-  { value: "121%", label: "Climbing speed increase" },
-  { value: "20,000+", label: "Lines of data migrated" },
-  { value: "15+", label: "CAN nodes at 1 Mbps" },
-  { value: "0.4–1.1%", label: "Position error per metre" },
+  { value: "HKUST", label: "Stress and Tension" },
+  { value: "Robocon", label: "<3" },
+  { value: "Game Addicted", label: "2000+ EU4" },
+  { value: "Chess GM", label: "Nah I am only 800 elo" },
 ];
 
 export type FocusArea = {
@@ -47,7 +47,7 @@ export const focusAreas: FocusArea[] = [
     index: "E",
     title: "Embedded",
     description:
-      "Bare-metal C on STM32F407: sensor interfaces over CAN, I²C, SPI and UART, motor command dispatch, and firmware that stays deterministic when the bus gets busy.",
+      "Bare-metal C on STM32F407: sensor interfaces over CAN, I²C, SPI and UART, motor command dispatch",
     tags: ["STM32F407", "CAN / VESC", "C"],
   },
   {
@@ -55,7 +55,7 @@ export const focusAreas: FocusArea[] = [
     title: "Control Systems",
     description:
       "Modelling the plant before tuning the loop: PID and state feedback, sensor fusion, and knowing where a linearised model stops being true.",
-    tags: ["PID", "State estimation", "Madgwick filter"],
+    tags: ["PID", "State estimation", "Kalman filter"],
   },
 ];
 
@@ -92,16 +92,7 @@ export const experience: ExperienceEntry[] = [
     ],
     tags: ["Python", "CSV pipelines", "ERP → NetSuite", "Validation"],
   },
-  {
-    role: "Undergraduate Researcher",
-    org: "Mevita Robotics Lab",
-    period: "Present",
-    kind: "Research",
-    bullets: [
-      "Researching magnetic tactile sensors — sensing hardware, signal processing and embedded readout.",
-    ],
-    tags: ["Tactile sensing", "Signal processing", "Embedded"],
-  },
+
 ];
 
 export type Project = {
@@ -149,16 +140,17 @@ export type SkillGroup = {
 };
 
 export const skillGroups: SkillGroup[] = [
-  { label: "Languages", items: ["C", "C++", "Java", "Python", "JavaScript"] },
+  { label: "Languages", items: ["C", "C++", "Java", "Python", "JavaScript", "PyTorch"] },
+  { label: "Backend", items: ["Spring Boot", "Jakarta", "Hibernate", "MySQL"]},
   {
     label: "Embedded",
     items: ["STM32F407", "Arduino", "CAN", "I²C", "SPI", "UART", "VESC"],
   },
   {
     label: "Robotics & control",
-    items: ["PID", "Sensor fusion", "State estimation", "FSM"],
+    items: ["PID", "Sensor fusion", "State estimation", "FSM", "Reinforcement Learning"],
   },
-  { label: "Tools", items: ["Git", "Bash", "Linux", "PyTorch (foundational)"] },
+  { label: "Toolchains", items: ["Git", "Bash", "Linux", "STMCube32IDE", "Docker"] },
 ];
 
 export const education = {
@@ -172,5 +164,5 @@ export const education = {
     "Reinforcement Learning",
     "System Modeling, Analysis and Control",
   ],
-  honors: "Honors — Design and Analysis of Algorithms",
+  honors: ["Dean List - 2025 Spring", "HKDSE Scholarship by HKUST"], 
 };

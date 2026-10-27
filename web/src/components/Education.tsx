@@ -7,7 +7,7 @@ export default function Education() {
       id="education"
       index="05"
       title="Education"
-      intro="Computer science with an AI major — and the control course that started the pendulum detour."
+      intro="Computer science with an AI major. However, I would say I learnt most of the embedded and robotics skills not in class, but in codes."
     >
       <div className="grid gap-px bg-line md:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
         <div className="bg-card px-5 py-7 md:px-8 md:py-9">
@@ -40,9 +40,20 @@ export default function Education() {
           <p className="mt-1 text-xs text-muted">{education.note}</p>
 
           <p className="mono-label mt-8">Honours</p>
-          <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-            {education.honors}
-          </p>
+          <ul className="mt-3 space-y-2">
+            {education.honors.map((honors) => (
+              <li
+                key={honors}
+                className="flex gap-3 text-sm leading-relaxed text-ink-soft"
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-[0.65em] h-1 w-1 shrink-0 bg-line-strong"
+                />
+                {honors}
+              </li>
+            ))}
+          </ul>
 
           <p className="mono-label mt-8">Location</p>
           <p className="mt-2 text-sm text-ink-soft">Hong Kong</p>
