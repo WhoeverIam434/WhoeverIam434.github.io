@@ -1,5 +1,5 @@
 export const profile = {
-  name: "Li Cheuk Hin",
+  name: "Marco Li",
   role: "Robotics engineer — embedded firmware · motion control · localisation",
   location: "Hong Kong",
   timezone: "UTC+8",

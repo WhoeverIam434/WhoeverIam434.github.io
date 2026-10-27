@@ -27,7 +27,7 @@ export default function Hero() {
             <p className="mono-label text-accent">// Robotics Engineer</p>
 
             <h1 className="mt-3 text-[clamp(3rem,10vw,7.5rem)] leading-[0.82] tracking-[-0.02em]">
-              Cheuk Hin Li<span className="text-accent">_</span>
+              Marco Li<span className="text-accent">_</span>
             </h1>
 
             <p className="mt-4 font-mono text-[10px] uppercase leading-relaxed tracking-[0.24em] text-muted">
