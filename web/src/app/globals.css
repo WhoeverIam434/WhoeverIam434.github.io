@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+/* ── design tokens ─────────────────────────────────────────────── */
+@theme {
+  --color-paper: #f4f2ec;
+  --color-paper-deep: #eae6da;
+  --color-card: #fbfaf6;
+  --color-ink: #14130f;
+  --color-ink-soft: #3a382f;
+  --color-muted: #6e695c;
+  --color-line: #d8d2c2;
+  --color-line-strong: #b6ae99;
+  --color-accent: #b03d0e;
+  --color-accent-weak: #f1ddcf;
+  --color-stable: #1e6b4b;
+  --color-danger: #9a2a16;
+
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua",
+    Palatino, Georgia, "Times New Roman", serif;
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas,
+    "Liberation Mono", monospace;
+}
+
+/* ── base ──────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: #fff;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* ── small shared primitives ───────────────────────────────────── */
+@layer components {
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .hero-grid {
+    background-image:
+      linear-gradient(to right, rgba(20, 19, 15, 0.038) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(20, 19, 15, 0.038) 1px, transparent 1px);
+    background-size: 52px 52px;
+    mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+  }
+
+  /* matrix brackets */
+  .matrix {
+    position: relative;
+    padding: 0.45rem 0.85rem;
+  }
+  .matrix::before,
+  .matrix::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    border: 1px solid var(--color-line-strong);
+  }
+  .matrix::before {
+    left: 0;
+    border-right: 0;
+  }
+  .matrix::after {
+    right: 0;
+    border-left: 0;
+  }
+
+  /* gain slider */
+  .gain-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 22px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .gain-range::-webkit-slider-runnable-track {
+    height: 2px;
+    background: var(--color-line-strong);
+  }
+  .gain-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 20px;
+    margin-top: -9px;
+    background: var(--color-ink);
+    border: 0;
+    transition: background-color 0.15s ease;
+  }
+  .gain-range:hover::-webkit-slider-thumb,
+  .gain-range:focus-visible::-webkit-slider-thumb {
+    background: var(--color-accent);
+  }
+  .gain-range::-moz-range-track {
+    height: 2px;
+    background: var(--color-line-strong);
+  }
+  .gain-range::-moz-range-thumb {
+    width: 12px;
+    height: 20px;
+    border-radius: 0;
+    border: 0;
+    background: var(--color-ink);
+  }
+  .gain-range:hover::-moz-range-thumb,
+  .gain-range:focus-visible::-moz-range-thumb {
+    background: var(--color-accent);
+  }
+
+  /* numeric input: hide native spinners for a cleaner field */
+  .gain-input {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  .gain-input::-webkit-outer-spin-button,
+  .gain-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
