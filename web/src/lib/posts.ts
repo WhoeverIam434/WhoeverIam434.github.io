@@ -122,7 +122,11 @@ function readPost(file: string, section: SectionKey): Post | null {
 
   try {
     const raw = fs.readFileSync(file, "utf8");
-    const { data, content } = matter(raw);
+    // Tolerate a BOM or blank lines before the frontmatter block.
+    const normalized = raw
+      .replace(/^\uFEFF/, "")
+      .replace(/^[\s\uFEFF]+(?=---\r?\n)/, "");
+    const { data, content } = matter(normalized);
 
     const title =
       (typeof data.title === "string" && data.title.trim()) ||
@@ -152,6 +156,8 @@ function readPost(file: string, section: SectionKey): Post | null {
 
 const cache = new Map<SectionKey, Post[]>();
 
+const MARKDOWN_EXTENSION = /\.(md|markdown)$/i;
+
 export function getPosts(section: SectionKey): Post[] {
   const cached = cache.get(section);
   if (cached) return cached;
@@ -159,10 +165,21 @@ export function getPosts(section: SectionKey): Post[] {
   const directory = sectionDir(section);
   let files: string[] = [];
   try {
-    files = fs
-      .readdirSync(directory)
-      .filter((name) => name.toLowerCase().endsWith(".md"))
-      .map((name) => path.join(directory, name));
+    const entries = fs.readdirSync(directory);
+    const markdown = entries.filter((name) => MARKDOWN_EXTENSION.test(name));
+    const ignored = entries.filter(
+      (name) => !MARKDOWN_EXTENSION.test(name) && !name.startsWith("."),
+    );
+
+    if (ignored.length > 0) {
+      // Surface a hint in the build log: an uploaded file without a .md
+      // extension is silently ignored otherwise.
+      console.warn(
+        `[posts] content/${section}/: ignored non-markdown file(s): ${ignored.join(", ")} (rename with a .md extension to publish)`,
+      );
+    }
+
+    files = markdown.map((name) => path.join(directory, name));
   } catch {
     files = [];
   }
@@ -171,6 +188,12 @@ export function getPosts(section: SectionKey): Post[] {
     .map((file) => readPost(file, section))
     .filter((post): post is Post => post !== null)
     .sort((a, b) => b.date.getTime() - a.date.getTime());
+
+  if (posts.length === 0) {
+    console.warn(
+      `[posts] content/${section}/ has no markdown files; the archive will render its empty state.`,
+    );
+  }
 
   cache.set(section, posts);
   return posts;

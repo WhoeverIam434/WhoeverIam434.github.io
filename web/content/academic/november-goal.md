@@ -1,0 +1,11 @@
+--- 
+title: November Goal
+date: 2026-10-27
+---
+
+# My plan on November
+Nothing special in November. No exams, no holidays, it's sort of a "the calm before the storm" (The storm being the final exam). Still there's a course project due at 16/11, which basically asking me to build up the whole backend alone. I also promised IR people to give a RDC display, which I still did not get the full requirement yet. Considering that they are quite busy, the delay is reasonable.
+
+Anyways, the focus of November shall be around projects. The course project is a bit annoying though as we did not even start writing a single line of code for it. Setting up Spring Boot locally is managable, but I still don't know how to remotely set up a SQL server for data storage as the requirement explictly specified that user data needs to be stored at backend. One of my teammate did similiar coursework by using a large JSON file to store every key-value pairs, but I wish to try building real backend from scratch as it could serve as a learning opportunity. But still, if the schedule is really that tight, then changing plan is reasonable.
+
+And there's basically nothing else besides the project. At the beginning of the semester, I actually emailed a professor asking for research opportunity about magnetic tactile sensors, which I really did got in. Except I felt like being at a state that nobody actually notice my existence. My senior introduced the sensor to me and ask me to figure out what I can research in, which I really dont have any idea since it is the first time I try research. I told her I will try to transfer the data processing stage from PC to embedded (ESP32). Maybe I should restart the research. (I did not write that on CV, considering that I really did not do anything yet).
