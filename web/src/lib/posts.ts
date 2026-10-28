@@ -117,6 +117,32 @@ function plainText(markdown: string): string {
     .trim();
 }
 
+/**
+ * Frontmatter keys are case-sensitive in YAML, but authors reasonably write
+ * `Summary:` or `Title:`. Resolve a key case-insensitively.
+ */
+function frontmatterField(
+  frontmatter: Record<string, unknown>,
+  name: string,
+): unknown {
+  if (frontmatter[name] !== undefined) return frontmatter[name];
+  const key = Object.keys(frontmatter).find(
+    (candidate) => candidate.toLowerCase() === name.toLowerCase(),
+  );
+  return key === undefined ? undefined : frontmatter[key];
+}
+
+function frontmatterText(
+  frontmatter: Record<string, unknown>,
+  ...names: string[]
+): string | null {
+  for (const name of names) {
+    const value = frontmatterField(frontmatter, name);
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return null;
+}
+
 function readPost(file: string, section: SectionKey): Post | null {
   const slug = path.basename(file, path.extname(file));
 
@@ -127,18 +153,18 @@ function readPost(file: string, section: SectionKey): Post | null {
       .replace(/^\uFEFF/, "")
       .replace(/^[\s\uFEFF]+(?=---\r?\n)/, "");
     const { data, content } = matter(normalized);
+    const frontmatter = data as Record<string, unknown>;
 
     const title =
-      (typeof data.title === "string" && data.title.trim()) ||
+      frontmatterText(frontmatter, "title") ||
       firstHeading(content) ||
       humanizeSlug(slug);
 
     const summary =
-      (typeof data.summary === "string" && data.summary.trim()) ||
-      (typeof data.description === "string" && data.description.trim()) ||
+      frontmatterText(frontmatter, "summary", "description") ||
       plainText(content).slice(0, 180);
 
-    const date = resolveDate(data.date, file);
+    const date = resolveDate(frontmatterField(frontmatter, "date"), file);
 
     return {
       section,
